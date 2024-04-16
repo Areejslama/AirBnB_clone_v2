@@ -116,18 +116,18 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, arg):
         """Create an object of any class with given parameters"""
         try:
-            name, *p = arg.split()
+            name= arg.split()[0]
         except ValueError:
             print("** missing class name **")
             return
         if name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        my_class = HBNBCommand.classes[name]
-        kwargs = {}
-        for para in p:
+        my_class = arg.split(" ")
+        new_instance = eval(name)
+        for n in range(1, len(my_class)):
             try:
-                key, value = para.split("=")
+                key, value = tuple(my_class[n]).split("=")
             except ValueError:
                 continue
             if value.startswith('"') and value.endswith('"'):
@@ -142,7 +142,6 @@ class HBNBCommand(cmd.Cmd):
                         value = int(value)
                     except ValueError:
                         continue
-                kwargs[key] = value
         new_instance = my_class(kwargs)
         storage.new(new_instance)
         storage.save()
