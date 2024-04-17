@@ -8,21 +8,28 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        return FileStorage.__objects
+        if cls:
+            return {
+                    key: vlaue
+                    for key, value in self.__objects.items()
+                    if isinstance(value, cls)
+                    }
+            return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        value = "{}.{}".format(obj.__class__.__name__, obj.id)
+        self.__objects[value] = obj
 
     def save(self):
-        """Saves storage dictionary to file"""
+        """save list of object"""
         with open(FileStorage.__file_path, 'w') as f:
             temp = {}
             temp.update(FileStorage.__objects)
-            for key, val in temp.items():
-                temp[key] = val.to_dict()
+        for key, val in temp.items():
+            temp[key] = val.to_dict()
             json.dump(temp, f)
 
     def reload(self):
@@ -36,15 +43,26 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+        }
         try:
-            temp = {}
-            with open(FileStorage.__file_path, 'r') as f:
-                temp = json.load(f)
-                for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+             with open(FileStorage.__file_path, 'r', encoding='UTF-8') as f:
+                 temp = json.load(f)
+                 for key, val in temp.items():
+                     name = val['__class__']
+                     my_obj = classes[name](**val)
+                     self.new(my_obj)
         except FileNotFoundError:
             pass
+        except json.decoder.JSONDecodeError:
+            pass
+    
+    def delete(self, obj=None):
+        """method to delete objects"""
+        if obj:
+            item = "{}.{}".format(obj.__class.____name__, obj.id)
+            if item in self.__objects:
+                del self.__objects[item]
+                self.save()
