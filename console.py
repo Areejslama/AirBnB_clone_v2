@@ -118,40 +118,42 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, arg):
         """Create an object"""
         try:
-            name = arg.split(" ")[0]
-            if len(name) == 0:
+            if not arg:
                 print("** class name missing **")
-                return
-            if name and name not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
 
-            my_args = {}
-            com = arg.split(" ")
-            for i in range(1, len(com)):
+            name, *attr = arg.split()
+            if not name:
+                print("** class name missing **")
 
-                key = com[i].split("=")[0]
-                value = com[i].split("=")[1]
-                if value.startswith('"'):
-                    value = value.strip('"').replace("_", " ")
-                else:
-                    try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
-                        continue
-                my_args[key] = value
-
-            if my_args == {}:
-                new_instance = eval(name)()
+            kwargs = {}
+            for a in attr:
+                match = re.match(r'(\w+)=(\S+)', a)
+                if match:
+                    key, val = match.groups()
+                    if val.startswith('"') and val.endswith('"'):
+                        value = (
+                            val[1:-1]
+                            .replace('_', ' ')
+                            .replace('\\"', '"')
+                            )
+                    else:
+                        try:
+                            val = eval(val)
+                        except (SyntaxError, NameError):
+                            continue
+                    kwargs[key] = val
+            if kwargs == {}:
+                my_obj = classes[name]()
             else:
-                new_instance = eval(name)(**my_args)
-            storage.new(new_instance)
-            print(new_instance.id)
-            storage.save()
-        except ValueError:
-            print(ValueError)
-            return
-        
+                my_obj = classes[name](**kwargs)
+            storage.new(my_obj)
+            print(my_obj.id)
+            obj.save(my_obj)
+
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
+            print("** class doesn't exist **")
     
     def help_create(self):
         """ Help information for the create method """

@@ -8,7 +8,6 @@ from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
-from sqlalchemy.exc import InvalidRequestError
 from models.state import State
 from models.user import User
 
@@ -42,23 +41,24 @@ class DBStorage:
                 cls = eval(cls)
             my_objects = self.__session.query(cls).all()
         else:
-            for class_obj in classes:
-                my_objects.extend(self.__session.query(class_obj).all())
+            for cls_obj in classes:
+                my_objects.extend(self.__session.query(cls_obj).all())
         return {
             "{}.{}".format(type(obj).__name__, obj.id): obj
             for obj in objects
         }
 
     def new(self, obj):
-        """add ibject to session"""
-        self.__session.add(obj)
+        """add object to session"""
+        if obj is not None:
+            self.__session.add(obj)
     
     def save(self):
         self.__session.commit()
     
     def delete(self, obj=None):
         if obj:
-            self.__session.delete()
+            self.__session.delete(obj)
     def reload(self):
         Base.metadata.drop_all(engine)
         Base.metadata.create_all(self.__engine)
