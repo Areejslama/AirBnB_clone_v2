@@ -4,19 +4,21 @@ from datetime import datetime
 from fabric.api import *
 from os.path import isdir, exists
 
-
 env.hosts = ['3.89.155.41', '54.208.154.58']
+
+
 def do_pack():
     """define function"""
     t = datetime.now()
     arc = 'web_static_' + t.strftime("%Y%m%d%H%M%S") + '.' + 'tgz'
-    if isdir ('versions') is False:
+    if isdir('versions') is False:
         local('mkdir -p versions')
     my_arc = local('tar -czvf versions/{} web_static'.format(arc))
     if my_arc is not None:
         return arc
     else:
         return None
+
 
 def do_deploy(archive_path):
     """Define deploy."""
@@ -37,10 +39,11 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
+
+
 def deploy():
     """create path"""
     archive_path = do_pack()
     if archive_path is None:
         return False
-    return do_deploy( archive_path)
-
+    return do_deploy(archive_path)
