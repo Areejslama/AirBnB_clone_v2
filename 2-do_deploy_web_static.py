@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-"""this script to do deploy"""
+"""This script is for deployment."""
 from fabric.api import run, put, env
 from os.path import exists
+
 env.hosts = ['3.89.155.41', '54.208.154.58']
 
-
 def do_deploy(archive_path):
-    """define deploy"""
+    """Define deploy."""
     if exists(archive_path) is False:
         return False
     try:
@@ -18,7 +18,7 @@ def do_deploy(archive_path):
         run('tar -xzf /tmp/{} -C {}{}/'.format(new_arc, path, new_name))
         run('rm /tmp/{}'.format(new_arc))
         run('mv {0}{1}/web_static/* {0}{1}/'.format(path, new_name))
-        run('rm -rf {}{}/web_static'.format(path, new_arc))
+        run('rm -rf {}{}/web_static'.format(path, new_name))
         run('rm -rf /data/web_static/current')
         run('ln -s {}{}/ /data/web_static/current'.format(path, new_name))
         return True
