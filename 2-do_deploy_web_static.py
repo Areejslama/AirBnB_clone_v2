@@ -11,7 +11,7 @@ def do_deploy(archive_path):
         return False
     try:
         new_arc = archive_path.split("/")[-1]
-        new_name = file_n.split(".")[0]
+        new_name = new_arc.split(".")[0]
         path = "/data/web_static/releases/"
         put(archive_path, '/tmp/')
         run('mkdir -p {}{}/'.format(path, new_name))
