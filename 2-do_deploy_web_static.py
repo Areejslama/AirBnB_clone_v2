@@ -2,11 +2,12 @@
 """this script to do deploy"""
 from fabric.api import run, put, env
 from os.path import exists
-
 env.hosts = ['3.89.155.41', '54.208.154.58']
+
+
 def do_deploy(archive_path):
     """define deploy"""
-    if archive_path is None:
+    if exists(archive_path) is False:
         return False
     try:
         new_arc = archive_path.split("/")[-1]
@@ -21,5 +22,5 @@ def do_deploy(archive_path):
         run('rm -rf /data/web_static/current')
         run('ln -sf {}{}/ /data/web_static/current'.format(path, new_name))
         return True
-    except:
+    except Exception:
         return False
