@@ -18,7 +18,7 @@ def welcome():
 @app.route("/c/<text>", strict_slashes=False)
 def show_text(text):
     new_text = text.replace("_", " ")
-    return f'c {text}'
+    return f'C {new_text}'
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
