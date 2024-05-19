@@ -31,19 +31,16 @@ class DBStorage:
 
     def all(self, cls=None):
         """Query all objects"""
-        objs = []
+        my_objects = []
+        clsses = [State, City, User, Amenity, Place, Review]
         if cls is None:
-            objs = self.__session.query(State).all()
-            objs.extend(self.__session.query(City).all())
-            objs.extend(self.__session.query(User).all())
-            objs.extend(self.__session.query(Place).all())
-            objs.extend(self.__session.query(Review).all())
-            objs.extend(self.__session.query(Amenity).all())
+             for cls_obj in classes:
+                 my_objects.extend(self.__session.query(cls_obj).all())
         else:
             if type(cls) == str:
                 cls = eval(cls)
-                objs = self.__session.query(cls)
-        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
+                my_objects = self.__session.query(cls).all()
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in my_objects}
 
     def new(self, obj):
         """Add an object to the current database session."""
@@ -67,5 +64,4 @@ class DBStorage:
         self.__session = Session()
     
     def close(self):
-        if self.__session is not None:
-             self.__session.remove()
+             self.__session.close()
