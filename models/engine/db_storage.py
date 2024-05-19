@@ -32,7 +32,7 @@ class DBStorage:
     def all(self, cls=None):
         """Query all objects"""
         my_objects = []
-        clsses = [State, City, User, Amenity, Place, Review]
+        classes = [State, City, User, Amenity, Place, Review]
         if cls is None:
              for cls_obj in classes:
                  my_objects.extend(self.__session.query(cls_obj).all())
@@ -64,4 +64,5 @@ class DBStorage:
         self.__session = Session()
     
     def close(self):
-             self.__session.close()
+        """Close session."""
+        self.__session.remove()
