@@ -65,3 +65,7 @@ class FileStorage:
             if item in self.__objects:
                 del self.__objects[item]
                 self.save()
+
+    def close(self):
+        """method to close json file"""
+        self.reload()
